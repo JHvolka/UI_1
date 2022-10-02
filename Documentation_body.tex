@@ -1,0 +1,122 @@
+
+\begingroup
+\frontmatter
+
+% Title
+\title{Umelá inteligencia \\ Eulerov kôň}
+\author{Jakub Hvolka}
+\maketitle
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\mainmatter
+
+
+\chapter{Zadanie}\label{ch:zadanie}
+
+Úlohou bolo vytvoriť program, ktorý nájde riešenia na problém známy ako Knight's Tour (ang.).
+
+Kôň začína na šachovnici na vybratom políčku, a úlohou je nájsť postupnosť ťahov tak, aby kôň prešiel celú
+šachovnicu a každé políčko navštívil práve raz.
+
+Na riešenie tohto programu som mal implementovať algoritmus \em{depth first search}, ktorý som mal obmedziť buď
+časovo, alebo maximálnym počtom výpočtových krokov.
+Takto som mal nájsť 10 riešení.
+5 pre šachovnicu s rozmermi 5x5 a 5 pre šachovnicu s rozmermi 6x6.
+Pre oba rozmery šachovnice som mal nájsť 1 riešenie pri začiatku v rohu šachovnice a 4 ďalšie s náhodným začiatkom.
+
+
+\chapter{Opis riešenia}\label{ch:opis-riešenia}
+
+Program som písal v jazyku c++.
+Rozdelil som ho na dve časti: šachovnica a DFS algoritmus.
+
+
+\section{Šachovnica}\label{sec:šachovnica}
+
+Šachovnica je uložená v triede \em{ChessBoard}.
+Táto trieda obsahuje dáta o šachovnici a jej aktuálnom stave, zoznam riešení ktoré boli nájdené
+a postupnosti krokov potrebné na zopakovanie týchto riešení.
+
+\subsection{Metódy}\label{subsec:metódy}
+
+\paragraph{Konštruktor} vytvára prázdnu šachovnicu s koňom na začiatočnom
+políčku.
+
+\paragraph{setPos} Presúva koňa na konkrétne políčko podľa vstupu.
+Kontroluje, či sa šachovnica nenachádza vo vyriešenom stave.
+Ak áno, riešenie sa uloží.
+
+\paragraph{resetPos} vráti späť posledný vykonaný ťah.
+
+\paragraph{operator <<} preťažuje operátor na výstup.
+Vypíše report o šachovnici, počte nájdených riešení a riešenia samotné.
+
+Pre účely čitateľnosti riešenia som sa rozhodol vypisovať len šachovnicu
+s očíslovanými políčkami, podľa poradia návštevy.
+Hodnoty sú opísané v tabuľke~\ref{tab:tabuľka-hodnôt}.
+Postupnosť krokov by sa triviálne dala získať z rozdielov medzi jednotlivými ťahmi,
+uloženými v solved\_move\_list~\ref{par:solved-move-list}.
+
+\paragraph{get\_last\_pos} vracia aktuálnu pozíciu na ktorej sa kôň nachádza
+
+\paragraph{get\_start\_pos} vracia pozíciu, na ktorej kôň začal.
+
+\subsection{Dáta}\label{subsec:dáta}
+Len najdôležitejšie:
+
+\paragraph{board}\label{par:board} ukladá stav šachovnice ako 2D pole celých čísel.
+\begin{table}[!ht]
+    \centering
+    \caption{Tabuľka hodnôt}
+    \label{tab:tabuľka-hodnôt}
+    \begin{tabular}{cc}
+        \toprule
+        hodnota & význam políčka \\ \midrule
+        0 & nenavštívené \\
+        1 & počiatočné políčko \\
+        2 až počet políčok & poradie návštevy políčka \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\paragraph{solved\_move\_list}\label{par:solved-move-list} zoznam postupností
+krokov ktoré vedú k riešeniam.
+
+\paragraph{solved\_boards} zoznam šachovníc vo vyriešenom stave.
+
+\section{Algoritmus}\label{sec:algoritmus}
+
+Hlavná časť programu je implementácia depth first search algoritmu.
+Tento algoritmus prehľadáva stavový priestor smerom do hĺbky a následne sa vracia
+ak sa kôň dostane na koniec cesty (či už nájde riešenie alebo nie).
+Algoritmus sa ukončí ak:
+\begin{itemize}
+    \item je nájdený požadovaný počet riešení,
+    \item je prehľadaný maximálny povolený počet stavov, alebo
+    \item je prehľadaný celý stavový priestor.
+\end{itemize}
+
+Algoritmus pre každý stav nájde susedné stavy a rekurzívne ich prehľadáva.
+Jednotlivé stavy nie sú celé uložené v pamäti, ale len informácia potrebná na
+ich návrat do rodičovského stavu je uložená.
+
+\section{Testovanie}\label{sec:testovanie
+
+\subsection{Spôsob testovania}\label{subsec:spôsob-testovania}
+
+Meral som časy vykonávania algoritmu.
+
+\subsection{Výsledky}\label{subsec:výsledky}
+
+\section{Záver}\label{sec:záver}
+
+
+
+
+
+
+
+\endgroup

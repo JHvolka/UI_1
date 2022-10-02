@@ -1,0 +1,128 @@
+%! Author = Atelan
+%! Date = 9/27/2022
+
+
+% Preamble
+\documentclass[a5paper, oneside, slovak]{article}
+
+% Language packages for slovak language compatibility
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[slovak]{babel}
+
+% Font
+\usepackage[fontsize=9pt]{scrextend}
+% Any size fonts
+\usepackage{lmodern}
+
+% Page geometry
+%\usepackage[margin=1cm, bindingoffset=.5cm]{geometry} % Regular A5
+\usepackage[papersize={4.5in,5.5in},hmargin=0 cm,vmargin={0 cm,0.06 cm}]{geometry} % Kindle
+
+% Color
+\usepackage{color}
+
+% Math libraries
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{turnstile} % Turnstile symbol
+\usepackage{wasysym} % Additional symbols
+\usepackage{bm} % Bold math symbols
+
+\usepackage{listings}
+
+% Tikz
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+
+% Tools for better tables
+\usepackage{booktabs}
+\usepackage{array}
+
+% Page layout tools
+\usepackage{enumitem} % Better enumeration
+\usepackage{float} % Tools for floats
+\usepackage{placeins} % Float restriction
+\usepackage{graphicx} % Include graphics
+\usepackage{graphics}
+\usepackage{lipsum}
+\usepackage{hhline} % Figure environment
+\usepackage{subfiles} % Multiple level file include
+
+% For watermark logo
+\usepackage{eso-pic}
+
+% Index
+\usepackage{makeidx}
+\makeindex
+\usepackage[totoc]{idxlayout} % Additional index options
+
+% Hyperlinks
+\usepackage{hyperref}
+
+
+% Smaller space between colums in a table
+\renewcommand{\tabcolsep}{5pt}
+
+% Title format
+\usepackage{titlesec} % Sections overhaul
+
+%%%%%%%%% Smaller title format for Kindle
+\usepackage[font=small,labelformat=simple,]{caption}   % customizing captions
+
+\titleformat{\chapter}[display]{\normalfont\bfseries}{}{-2em}{\huge\thechapter\quad}
+\titlespacing{\chapter}{0pt}{0pt}{0.5 cm}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% page geometry
+\usepackage{fancyhdr}   % headers and footers
+\pagestyle{fancy}
+\fancyhead{}            % clear page header
+\fancyfoot{}            % clear page footer
+
+\setlength{\abovecaptionskip}{2pt} % space above captions
+\setlength{\belowcaptionskip}{0pt} % space below captions
+\setlength{\textfloatsep}{2pt}     % space between last top float or first bottom float and the text
+\setlength{\floatsep}{2pt}         % space left between floats
+\setlength{\intextsep}{2pt}        % space left on top and bottom of an in-text float
+%%%%%%%%%
+
+
+% Border for Kindle. Used to fix weird PDF resizing issues (/"feature"?) on device.
+\usepackage{pgfplots}
+\usepackage{pgf}
+\usepackage{pgfpages}
+\pgfplotsset{compat=1.18}
+\definecolor{border_gray}{RGB}{250,250,250}
+
+\pgfpagesdeclarelayout{boxed}
+{
+    \edef\pgfpageoptionborder{0pt}
+}
+{
+    \pgfpagesphysicalpageoptions
+    {%
+        logical pages=1,%
+    }
+    \pgfpageslogicalpageoptions{1}
+    {
+        border code=\pgfsetlinewidth{0.01pt}\pgfstroke,
+        border shrink=\pgfpageoptionborder,
+        resized width=4.47in,
+        resized height=5.47in,
+        center=\pgfpoint{.5\pgfphysicalwidth}{.5\pgfphysicalheight}
+        \pgfsetstrokecolor{border_gray}
+    }%
+}
+
+\pgfpagesuselayout{boxed}
+
+
+% Document
+\begin{document}
+    \subfile{Documentation_body.tex}
+\end{document}
