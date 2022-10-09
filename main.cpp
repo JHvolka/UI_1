@@ -4,11 +4,12 @@
 #include <iomanip>
 #include <random>
 #include <chrono>
+#include <ranges>
 
-typedef std::vector<std::pair<int, int>> pair_vect;
-typedef std::pair<int, int>              int_pair;
+typedef std::vector <std::pair<int, int>> pair_vect;
+typedef std::pair<int, int>               int_pair;
 
-template<int X, int Max_Solutions = 1>
+template<int X, int Max_Solutions = 1, bool print_operators = false>
 class ChessBoard {
 public:
     ChessBoard(int x, int y)
@@ -87,7 +88,8 @@ public:
      * @return reference to original ostream
      */
     friend std::ostream &
-    operator<<(std::ostream &os, ChessBoard<X, Max_Solutions> &chessBoard) {
+    operator<<(std::ostream &os,
+               ChessBoard<X, Max_Solutions, print_operators> &chessBoard) {
         os << "Solved boards of size " << X << " x " << X << "\nStarting at ("
            << chessBoard.get_start_pos().first << ", "
            << chessBoard.get_start_pos().second << ")\nFound "
@@ -95,15 +97,41 @@ public:
 
         int sol_num = 1;
 
-        for (auto &brd: chessBoard.solved_boards) {
-            os << "Solution " << sol_num++ << ":\n";
-            for (int i = 0; i < X; ++i) {
-                for (int j = 0; j < X; ++j) {
-                    os << std::setw(3) << brd[i][j] << " ";
+        if (print_operators) {
+            // Filter that accepts everything but first item
+            auto not_first = [&](std::pair<int, int> i) {
+                return i.first != chessBoard.get_start_pos().first &&
+                       i.second != chessBoard.get_start_pos().second;
+            };
+
+            for (std::vector <std::pair<int, int>> &operators: chessBoard.solved_move_list) {
+                os << "Solution " << sol_num++ << ":\n";
+                auto      &previous = operators.front();
+                for (auto &pos: operators | std::views::drop_while(
+                        [&](std::pair<int, int> i) {
+                            return i.first ==
+                                   chessBoard.get_start_pos().first &&
+                                   i.second ==
+                                   chessBoard.get_start_pos().second;
+                        })) {
+                    std::cout << "(" << pos.first - previous.first << ", "
+                              << pos.second - previous.second << ") ";
+                    previous = pos;
                 }
                 os << "\n";
             }
-            os << "\n";
+        }
+        else {
+            os << "Solution " << sol_num++ << ":\n";
+            for (auto &brd: chessBoard.solved_boards) {
+                for (int i = 0; i < X; ++i) {
+                    for (int j = 0; j < X; ++j) {
+                        os << std::setw(3) << brd[i][j] << " ";
+                    }
+                    os << "\n";
+                }
+                os << "\n";
+            }
         }
         return os;
     }
@@ -131,24 +159,25 @@ public:
      *
      * @return true if number of found solutions >= required solutions
      */
-    bool Finished() {
+    [[nodiscard]]
+    bool Finished() const {
         return solutions_count >= Max_Solutions;
     }
 
 private:
     //! 2D array containing tile board (chess board)
-    std::array<std::array<int, X>, X> board;
+    std::array <std::array<int, X>, X> board;
     //! Number of set tiles
-    int                               m_num_of_set;
+    int                                m_num_of_set;
 
     //! List of moves from start
-    pair_vect                                      move_list;
+    pair_vect               move_list;
     //! Number of tiles / max number of moves
-    static const int                               max = X * X;
+    static const int        max = X * X;
     //!
-    int                                            solutions_count;
-    std::vector<pair_vect>                         solved_move_list;
-    std::vector<std::array<std::array<int, X>, X>> solved_boards;
+    int                     solutions_count;
+    std::vector <pair_vect> solved_move_list;
+    std::vector <std::array<std::array < int, X>, X>> solved_boards;
 };
 
 /**
@@ -223,8 +252,9 @@ private:
  * @return true if algorithm has finished (found solutions or reached state
  * limit), false otherwise.
  */
-template<int X, int Max_Solutions = 1, int Max_states = 100000000>
-bool recursive(ChessBoard<X, Max_Solutions> &board, int & state_count) {
+template<int X, int Max_Solutions = 1, bool print_operators = false, int Max_states = 100000000>
+bool recursive(ChessBoard<X, Max_Solutions, print_operators> &board,
+               int &state_count) {
 
     // Check if state limit has been reached
     if (state_count >= Max_states)
@@ -261,119 +291,47 @@ bool recursive(ChessBoard<X, Max_Solutions> &board, int & state_count) {
     return false;
 }
 
-int main() {
+template<int X, int Max_Solutions = 1, bool print_operators = false, int Max_states = 100000000>
+void test(bool random = true) {
     // Initialize generator
     std::random_device rd;
     std::mt19937       gen(rd());
 
     // Uniform distributions for random starting coordinates
-    std::uniform_int_distribution<> distrib_5(0, 4);
-    std::uniform_int_distribution<> distrib_6(0, 5);
+    std::uniform_int_distribution<> distrib(0, X - 1);
 
+    // Initialize board with random coordinates or (0,0)
+    ChessBoard<X, 1, print_operators> board(random ? 0 : distrib(gen),
+                                            random ? 0 : distrib(gen));
 
+    // Calculate solutions and measure time
+    const auto time_start = std::chrono::high_resolution_clock::now();
 
-    // Construct all chessboards
-    ChessBoard<5, 5> board5_0_0(0, 0);
-    ChessBoard<5, 5> board5_rand_1(distrib_5(gen), distrib_5(gen));
-    ChessBoard<5, 5> board5_rand_2(distrib_5(gen), distrib_5(gen));
-    ChessBoard<5, 5> board5_rand_3(distrib_5(gen), distrib_5(gen));
-    ChessBoard<5, 5> board5_rand_4(distrib_5(gen), distrib_5(gen));
-    ChessBoard<6, 5> board6_0_0(0, 0);
-    ChessBoard<6, 5> board6_rand_1(distrib_6(gen), distrib_6(gen));
-    ChessBoard<6, 5> board6_rand_2(distrib_6(gen), distrib_6(gen));
-    ChessBoard<6, 5> board6_rand_3(distrib_6(gen), distrib_6(gen));
-    ChessBoard<6, 5> board6_rand_4(distrib_6(gen), distrib_6(gen));
+    int state_count = 0;
 
-
-
-    // Calculate solutions and measure time for each
-    const auto time_5_0_0_start = std::chrono::high_resolution_clock::now();
-    int x = 0;
-    recursive(board5_0_0,x);
-    const auto time_5_0_0_end      = std::chrono::high_resolution_clock::now();
-    const auto time_5_rand_1_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board5_rand_1,x);
-    const auto time_5_rand_1_end   = std::chrono::high_resolution_clock::now();
-    const auto time_5_rand_2_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board5_rand_2,x);
-    const auto time_5_rand_2_end   = std::chrono::high_resolution_clock::now();
-    const auto time_5_rand_3_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board5_rand_3,x);
-    const auto time_5_rand_3_end   = std::chrono::high_resolution_clock::now();
-    const auto time_5_rand_4_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board5_rand_4,x);
-    const auto time_5_rand_4_end = std::chrono::high_resolution_clock::now();
-    const auto time_6_0_0_start  = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board6_0_0,x);
-    const auto time_6_0_0_end      = std::chrono::high_resolution_clock::now();
-    const auto time_6_rand_1_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board6_rand_1,x);
-    const auto time_6_rand_1_end   = std::chrono::high_resolution_clock::now();
-    const auto time_6_rand_2_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board6_rand_2,x);
-    const auto time_6_rand_2_end   = std::chrono::high_resolution_clock::now();
-    const auto time_6_rand_3_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board6_rand_3,x);
-    const auto time_6_rand_3_end   = std::chrono::high_resolution_clock::now();
-    const auto time_6_rand_4_start = std::chrono::high_resolution_clock::now();
-    x = 0;
-    recursive(board6_rand_4,x);
-    const auto time_6_rand_4_end = std::chrono::high_resolution_clock::now();
-
+    recursive(board, state_count);
+    const auto time_end = std::chrono::high_resolution_clock::now();
 
     // Calculate durations from time points
-    std::chrono::duration<double> duration_5_0_0    = time_5_0_0_end -
-                                                      time_5_0_0_start;
-    std::chrono::duration<double> duration_5_rand_1 = time_5_rand_1_end -
-                                                      time_5_rand_1_start;
-    std::chrono::duration<double> duration_5_rand_2 = time_5_rand_2_end -
-                                                      time_5_rand_2_start;
-    std::chrono::duration<double> duration_5_rand_3 = time_5_rand_3_end -
-                                                      time_5_rand_3_start;
-    std::chrono::duration<double> duration_5_rand_4 = time_5_rand_4_end -
-                                                      time_5_rand_4_start;
-    std::chrono::duration<double> duration_6_0_0    = time_6_0_0_end -
-                                                      time_6_0_0_start;
-    std::chrono::duration<double> duration_6_rand_1 = time_6_rand_1_end -
-                                                      time_6_rand_1_start;
-    std::chrono::duration<double> duration_6_rand_2 = time_6_rand_2_end -
-                                                      time_6_rand_2_start;
-    std::chrono::duration<double> duration_6_rand_3 = time_6_rand_3_end -
-                                                      time_6_rand_3_start;
-    std::chrono::duration<double> duration_6_rand_4 = time_6_rand_4_end -
-                                                      time_6_rand_4_start;
-
-
+    std::chrono::duration<double> duration = time_end - time_start;
 
     // Print solutions to stdout
-    std::cout << "Time: " << std::setw(9) << duration_5_0_0.count() << "s\n" << board5_0_0
+    std::cout << "Time: " << std::setw(9) << duration.count() << "s\n"
+              << "States searched: " << state_count << "\n"
+              << board
               << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_5_rand_2.count() << "s\n" << board5_rand_2
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_5_rand_3.count() << "s\n" << board5_rand_3
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_5_rand_4.count() << "s\n" << board5_rand_4
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_5_rand_1.count() << "s\n" << board5_rand_1
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_6_0_0.count() << "s\n" << board6_0_0
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_6_rand_2.count() << "s\n" << board6_rand_1
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_6_rand_3.count() << "s\n" << board6_rand_2
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_6_rand_4.count() << "s\n" << board6_rand_3
-              << std::endl;
-    std::cout << "Time: " << std::setw(9) << duration_6_rand_1.count() << "s\n" << board6_rand_4
-              << std::endl;
+}
 
+int main() {
+
+    test<5, 1, true>();
+    for (int i = 0; i < 4; ++i) {
+        test<5, 1, true>();
+    }
+
+    test<6, 1, true>();
+    for (int i = 0; i < 4; ++i) {
+        test<6, 1, true>();
+    }
     return 0;
 }
