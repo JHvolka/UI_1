@@ -6,8 +6,8 @@
 #include <chrono>
 #include <ranges>
 
-typedef std::vector <std::pair<int, int>> pair_vect;
-typedef std::pair<int, int>               int_pair;
+typedef std::vector<std::pair<int, int>> pair_vect;
+typedef std::pair<int, int>              int_pair;
 
 template<int X, int Max_Solutions = 1, bool print_operators = false>
 class ChessBoard {
@@ -90,10 +90,10 @@ public:
     friend std::ostream &
     operator<<(std::ostream &os,
                ChessBoard<X, Max_Solutions, print_operators> &chessBoard) {
-        os << "Solved boards of size " << X << " x " << X << "\nStarting at ("
-           << chessBoard.get_start_pos().first << ", "
-           << chessBoard.get_start_pos().second << ")\nFound "
-           << chessBoard.solutions_count << " boards\n\n";
+        os << "Solved boards of size " << X << " x " << X << "\nStarting at (";
+        os << chessBoard.get_start_pos().first << ", ";
+        os << chessBoard.get_start_pos().second << ")\nFound ";
+        os << chessBoard.solutions_count << " boards\n\n";
 
         int sol_num = 1;
 
@@ -104,7 +104,7 @@ public:
                        i.second != chessBoard.get_start_pos().second;
             };
 
-            for (std::vector <std::pair<int, int>> &operators: chessBoard.solved_move_list) {
+            for (std::vector<std::pair<int, int>> &operators: chessBoard.solved_move_list) {
                 os << "Solution " << sol_num++ << ":\n";
                 auto      &previous = operators.front();
                 for (auto &pos: operators | std::views::drop_while(
@@ -166,18 +166,18 @@ public:
 
 private:
     //! 2D array containing tile board (chess board)
-    std::array <std::array<int, X>, X> board;
+    std::array<std::array<int, X>, X> board;
     //! Number of set tiles
-    int                                m_num_of_set;
+    int                               m_num_of_set;
 
     //! List of moves from start
-    pair_vect               move_list;
+    pair_vect                                      move_list;
     //! Number of tiles / max number of moves
-    static const int        max = X * X;
+    static const int                               max = X * X;
     //!
-    int                     solutions_count;
-    std::vector <pair_vect> solved_move_list;
-    std::vector <std::array<std::array < int, X>, X>> solved_boards;
+    int                                            solutions_count;
+    std::vector<pair_vect>                         solved_move_list;
+    std::vector<std::array<std::array<int, X>, X>> solved_boards;
 };
 
 /**
@@ -291,7 +291,7 @@ bool recursive(ChessBoard<X, Max_Solutions, print_operators> &board,
     return false;
 }
 
-template<int X, int Max_Solutions = 1, bool print_operators = false, int Max_states = 100000000>
+template<int X, int Max_Solutions = 1, bool print_operators = false>
 void test(bool random = true) {
     // Initialize generator
     std::random_device rd;
@@ -301,8 +301,8 @@ void test(bool random = true) {
     std::uniform_int_distribution<> distrib(0, X - 1);
 
     // Initialize board with random coordinates or (0,0)
-    ChessBoard<X, 1, print_operators> board(random ? 0 : distrib(gen),
-                                            random ? 0 : distrib(gen));
+    ChessBoard<X, 1, print_operators> board(!random ? 0 : distrib(gen),
+                                            !random ? 0 : distrib(gen));
 
     // Calculate solutions and measure time
     const auto time_start = std::chrono::high_resolution_clock::now();
@@ -316,22 +316,30 @@ void test(bool random = true) {
     std::chrono::duration<double> duration = time_end - time_start;
 
     // Print solutions to stdout
-    std::cout << "Time: " << std::setw(9) << duration.count() << "s\n"
-              << "States searched: " << state_count << "\n"
-              << board
+    std::cout /*<< "Time: " << std::setw(9) << duration.count() << "s\n"*/
+              << "States searched: " << state_count //<< "\n"
+//              << board
               << std::endl;
 }
 
 int main() {
 
-    test<5, 1, true>();
-    for (int i = 0; i < 4; ++i) {
+    // Test 5x5, 1 solution, print operator path (not board)
+//    test<5, 1, true>();
+//
+//    for (int i = 0; i < 4; ++i) {
+//        test<5, 1, true>();
+//    }
+
+    // Test 6x6, 1 solution, print operator path (not board)
+//    test<6, 1, true>(false);
+
+    for (int i = 0; i < 100; ++i) {
         test<5, 1, true>();
     }
 
-    test<6, 1, true>();
-    for (int i = 0; i < 4; ++i) {
-        test<6, 1, true>();
-    }
+
+//    test<7, 1, true>(false);
+//    test<8, 1, true>(false);
     return 0;
 }

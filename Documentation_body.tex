@@ -1,4 +1,3 @@
-
 \begingroup
 \frontmatter
 
@@ -75,9 +74,9 @@ Len najdôležitejšie:
     \label{tab:tabuľka-hodnôt}
     \begin{tabular}{cc}
         \toprule
-        hodnota & význam políčka \\ \midrule
-        0 & nenavštívené \\
-        1 & počiatočné políčko \\
+        hodnota            & význam políčka           \\ \midrule
+        0                  & nenavštívené             \\
+        1                  & počiatočné políčko       \\
         2 až počet políčok & poradie návštevy políčka \\ \bottomrule
     \end{tabular}
 \end{table}
@@ -86,6 +85,7 @@ Len najdôležitejšie:
 krokov ktoré vedú k riešeniam.
 
 \paragraph{solved\_boards} zoznam šachovníc vo vyriešenom stave.
+
 
 \section{Algoritmus}\label{sec:algoritmus}
 
@@ -103,13 +103,25 @@ Algoritmus pre každý stav nájde susedné stavy a rekurzívne ich prehľadáva
 Jednotlivé stavy nie sú celé uložené v pamäti, ale len informácia potrebná na
 ich návrat do rodičovského stavu je uložená.
 
+
 \section{Testovanie}\label{sec:testovanie}
 
 \subsection{Spôsob testovania}\label{subsec:spôsob-testovania}
 
-Meral som časy vykonávania algoritmu.
+Meral som časy vykonávania algoritmu a pamäť využitú programom.
+Merania boli ohraničené maximálnym počtom stavov, ktoré algoritmus mohol navštíviť.
 
-\subsection{Výsledky}\label{subsec:výsledky}
+\subsection{Výsledky meraní}\label{subsec:výsledky}
+
+Pri meraní vyšli priemerné časy pre prehľadanie jedného stavu rovnaké pre všetky vstupy, a to v rozmedzí medzi 13 až 15 ns.
+
+Pre šachovnice 5x5 bol algoritmus schopný prejsť všetky stavy (1829420), v prípade, že riešenie neexistovalo.
+
+
+
+
+
+
 
 \section{Záver}\label{sec:záver}
 
