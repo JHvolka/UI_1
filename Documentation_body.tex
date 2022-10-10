@@ -14,7 +14,7 @@
 \mainmatter
 
 
-\chapter{Zadanie}\label{ch:zadanie}
+\section{Zadanie}\label{ch:zadanie}
 
 Úlohou bolo vytvoriť program, ktorý nájde riešenia na problém známy ako Knight's Tour (ang.).
 
@@ -28,19 +28,19 @@ Takto som mal nájsť 10 riešení.
 Pre oba rozmery šachovnice som mal nájsť 1 riešenie pri začiatku v rohu šachovnice a 4 ďalšie s náhodným začiatkom.
 
 
-\chapter{Opis riešenia}\label{ch:opis-riešenia}
+\section{Opis riešenia}\label{ch:opis-riešenia}
 
 Program som písal v jazyku c++.
 Rozdelil som ho na dve časti: šachovnica a DFS algoritmus.
 
 
-\section{Šachovnica}\label{sec:šachovnica}
+\subsection{Šachovnica}\label{sec:šachovnica}
 
 Šachovnica je uložená v triede \em{ChessBoard}.
 Táto trieda obsahuje dáta o šachovnici a jej aktuálnom stave, zoznam riešení ktoré boli nájdené
 a postupnosti krokov potrebné na zopakovanie týchto riešení.
 
-\subsection{Metódy}\label{subsec:metódy}
+\subsubsection{Metódy}\label{subsec:metódy}
 
 \paragraph{Konštruktor} vytvára prázdnu šachovnicu s koňom na začiatočnom
 políčku.
@@ -64,7 +64,7 @@ uloženými v solved\_move\_list~\ref{par:solved-move-list}.
 
 \paragraph{get\_start\_pos} vracia pozíciu, na ktorej kôň začal.
 
-\subsection{Dáta}\label{subsec:dáta}
+\subsubsection{Dáta}\label{subsec:dáta}
 Len najdôležitejšie:
 
 \paragraph{board}\label{par:board} ukladá stav šachovnice ako 2D pole celých čísel.
@@ -87,7 +87,7 @@ krokov ktoré vedú k riešeniam.
 \paragraph{solved\_boards} zoznam šachovníc vo vyriešenom stave.
 
 
-\section{Algoritmus}\label{sec:algoritmus}
+\subsection{Algoritmus}\label{sec:algoritmus}
 
 Hlavná časť programu je implementácia depth first search algoritmu.
 Tento algoritmus prehľadáva stavový priestor smerom do hĺbky a následne sa vracia
@@ -115,16 +115,13 @@ Merania boli ohraničené maximálnym počtom stavov, ktoré algoritmus mohol na
 
 Pri meraní vyšli priemerné časy pre prehľadanie jedného stavu rovnaké pre všetky vstupy, a to v rozmedzí medzi 13 až 15 ns.
 
-Pre šachovnice 5x5 bol algoritmus schopný prejsť všetky stavy (1829420), v prípade, že riešenie neexistovalo.
-
-
-
-
-
+Počty prehľadaných stavov vyzerajú náhodne a majú veľkú odchýlku.
 
 
 \section{Záver}\label{sec:záver}
-
+Algoritmus funguje dobre, ale prehľadáva stavy náhodne.
+Dal by sa výrazne zrýchliť použitím heuristiky, ktorá by uprednostnila pri výbere tie stavy,
+ktoré majú lepšiu pravdepodobnosť viesť k úspešnému riešeniu.
 
 
 

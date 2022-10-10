@@ -316,30 +316,30 @@ void test(bool random = true) {
     std::chrono::duration<double> duration = time_end - time_start;
 
     // Print solutions to stdout
-    std::cout /*<< "Time: " << std::setw(9) << duration.count() << "s\n"*/
-              << "States searched: " << state_count //<< "\n"
-//              << board
+    std::cout << "Time: " << std::setw(9) << duration.count() << "s\n"
+              << "States searched: " << state_count << "\n"
+              << board
               << std::endl;
 }
 
 int main() {
 
-    // Test 5x5, 1 solution, print operator path (not board)
-//    test<5, 1, true>();
-//
-//    for (int i = 0; i < 4; ++i) {
-//        test<5, 1, true>();
-//    }
+//     Test 5x5, 1 solution, print operator path (not board)
+    test<5, 1, true>();
 
-    // Test 6x6, 1 solution, print operator path (not board)
-//    test<6, 1, true>(false);
-
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 4; ++i) {
         test<5, 1, true>();
     }
 
+//     Test 6x6, 1 solution, print operator path (not board)
+    test<6, 1, true>(false);
 
-//    test<7, 1, true>(false);
-//    test<8, 1, true>(false);
+    for (int i = 0; i < 5; ++i) {
+        test<6, 1, true>();
+    }
+
+
+    test<7, 1, true>(false);
+    test<8, 1, true>(false);
     return 0;
 }
